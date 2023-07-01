@@ -35,7 +35,7 @@ program powerlaw
   ! DERIV is [user-specified] compute derivative of solution wrt time?
   ! WBSTORAGE is [computed] whether wellbore storage is used?
   ! ATSOURCE is [computed] whether solution is inside source boreholes?
-  ! COMPUTEP is [computed] whether computing pressure solution for specified
+  ! COMPUTEP is [user-specified] whether computing pressure solution for specified
   !  pressure (only makes sense outside source borehole)?
   logical :: SPECQ, CALCT, HEADER, DERIV, WBSTORAGE, ATSOURCE, COMPUTEP
 
@@ -92,6 +92,7 @@ program powerlaw
 
   ! sigma, wellbore storage coefficient (0= no WB storage)
   ! lambda, omega: inter-porosity exchange coeff, fracture porosity ratio
+  ! rD: radius for calculation point (anything <= 1 is in source well)
   read(20,*,iostat=ierr) sigma, lambda, omega, dummy, rD
   if (ierr /= 0) then
      write(*,*) 'error reading line 3: ',sigma,lambda,omega,"not used",rD
@@ -235,7 +236,7 @@ program powerlaw
   omomega = 1.0_DP - omega
 
   ! compute logical flags
-  if(abs(sigma)*ULP < spacing(0.0_DP)) then
+  if(sigma*ULP < spacing(0.0_DP)) then
      WBSTORAGE = .false. ! sigma = 0
   else
      WBSTORAGE = .true. ! sigma > 0
