@@ -1,6 +1,6 @@
+from glob import glob
 import numpy as np
 import matplotlib.pyplot as plt
-from glob import glob
 
 DAY2SEC = 24.0 * 60.0 * 60.0
 
@@ -23,7 +23,7 @@ fig, ax = plt.subplots(1, 1, num=1, figsize=(6, 4))
 
 for fn in glob("??-*r.csv"):
     bore_no = fn.split("-")[0]
-    bore_r = float(fn.split("-")[1][:-5])  # drop r.csv
+    bore_r = float(fn.split("-")[1][:-5])  # drop "r.csv" from end
     bores[bore_no] = bore_r
     d[bore_no] = []
     with open(fn, "r", encoding="ascii") as fh:
@@ -51,7 +51,7 @@ for fn in glob("??-*r.csv"):
         marker=".",
     )
 
-    np.savetxt(fn.replace(".csv", "-drawdown.csv"), sdelta[pos_mask],fmt="%.3e")
+    np.savetxt(fn.replace(".csv", "-drawdown.csv"), sdelta[pos_mask], fmt="%.3e")
 
 ax.set_xlabel("time since mineby [sec]")
 ax.set_ylabel("$\\Delta P$ since mineby [MPa]")
@@ -59,3 +59,4 @@ ax.grid(True)
 ax.legend(loc=0, fontsize="small")
 
 fig.savefig("drawdown.png", dpi=200)
+plt.close(1)

@@ -261,9 +261,9 @@ program powerlaw
 
   if (HEADER) then
      ! echo key input to header for documentation (could be used as input file, save last line)
-     write(30,'(A,L1,1X,I1,4(1X,L1))') '# ',SPECQ,PORO,HEADER,DERIV, WBSTORAGE,ATSOURCE
+     write(30,'(A,L1,1X,I1,3(1X,L1))') '# ',SPECQ,PORO,HEADER,DERIV,COMPUTEP
      write(30,'(A,3(ES14.7,1X),I0)') '# ',eta,kappa,mdim,NA
-     write(30,'(A,4(ES14.7,1X))') '# ',sigma,lambda,omega,rD
+     write(30,'(A,5(ES14.7,1X))') '# ',sigma,lambda,omega,dummy,rD
      write(30,'(A,L1,1X,2(ES14.7,1X),I0,1X,A)') '# ',CALCT,minlogt,maxlogt,NT,trim(time_file)
      write(30,'(A,2(ES14.7,1X),I0)') '# ',lap%alpha,lap%tol,lap%M
      write(30,'(2A)') '# ',trim(out_file)
@@ -272,7 +272,7 @@ program powerlaw
      else
         write(30,'(A,I0,1X,999(ES14.7,1X))') '# L7: ',timeFlag,timepar(:)
      end if
-     write(30,'(A,3(1X,ES14.7))') '## alpha,gamma,nu',alpha,gamma,nu
+     write(30,'(A,3(1X,ES14.7),2(1X,L1))') '## alpha,gamma,nu,WBSTOR,ATSRC',alpha,gamma,nu, WBSTORAGE,ATSOURCE
      if (SPECQ) then
         write(30,'(A)') '#      t_D                 p_D(r_D)'//&
              &'             deriv wrt ln(t)'
