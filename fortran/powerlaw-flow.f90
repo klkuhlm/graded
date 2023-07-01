@@ -56,7 +56,7 @@ program powerlaw
 
   ! min and maximum log t for computing solution
   ! Amos bessl function solutions are computed scaled, unscale is to convert back
-  real(DP) :: minlogt, maxlogt, tee, r_term, unscale
+  real(DP) :: minlogt, maxlogt, tee, r_term
 
   ! NT num times, NP num laplace parameters, NA number Kazemi series terms, PORO is model flag
   integer :: NT, NP, i, j, n, PORO, NA, ii
@@ -68,7 +68,7 @@ program powerlaw
   complex(DP), dimension(1) :: Ksigma
   real(DP) :: ft, dft
   real(DP), allocatable :: t(:), ivsq(:)
-  complex(DP), allocatable :: p(:), fp(:), barft(:), beta(:), arg(:,:), betgam(:)
+  complex(DP), allocatable :: p(:), fp(:), barft(:), beta(:), arg(:,:), betgam(:), unscale(:)
   type(invLaplace) :: lap
 
   open(unit=20,file='powerlaw.in',action='read',status='old')
@@ -249,7 +249,7 @@ program powerlaw
   end if
 
   NP = 2*lap%M+1  ! number of laplace parameters per time
-  allocate(p(NP),fp(NP),barft(NP),beta(NP),arg(NP,-1:0),betgam(NP))
+  allocate(p(NP),fp(NP),barft(NP),beta(NP),arg(NP,-1:0),betgam(NP),unscale(NP))
 
   alpha = (1.0_DP + kappa - mdim) / 2.0_DP
   gamma = (2.0_DP + kappa - eta) / 2.0_DP
@@ -273,7 +273,8 @@ program powerlaw
      else
         write(30,'(A,I0,1X,999(ES14.7,1X))') '# L7: ',timeFlag,timepar(:)
      end if
-     write(30,'(A,3(1X,ES14.7),2(1X,L1))') '## alpha,gamma,nu,WBSTOR,ATSRC',alpha,gamma,nu, WBSTORAGE,ATSOURCE
+     write(30,'(A,3(1X,ES14.7),2(1X,L1))') '## alpha,gamma,nu,WBSTOR,ATSRC', &
+          & alpha,gamma,nu,WBSTORAGE,ATSOURCE
      if (SPECQ) then
         write(30,'(A)') '#      t_D                 p_D(r_D)'//&
              &'             deriv wrt ln(t)'
@@ -295,24 +296,25 @@ program powerlaw
      p(1:NP) = deHoog_pvalues(tee,lap)
      barft(1:NP) = time_pvect(p(:),timePar(:),timeFlag)
 
-     if (PORO == 1) then
-        ! single porosity, barker-like
-        beta(1:NP) = 1.0_DP
-     elseif (PORO == 2) then
-        ! warren-root double porosity
-        beta(1:NP) = omega + lambda / (lambda / omomega + p(:))
-     elseif (PORO == 3) then
-        ! approximation to Kazemi via Kuhlman et al. (2015)
-        ! sum() is \bar{g}(p) (i.e., matrix memory kernel)
-        beta(1:NP) = omega + sum(2.0_DP * lambda / &
-             (spread(ivsq(1:NA) * lambda / omomega, dim=2, ncopies=NP) + &
-              spread(p(1:NP), dim=1, ncopies=NA)), dim=1)
-     elseif (PORO == 4) then
-        ! infinite sum evaluated using Mathematica
-        beta(1:NP) = omega +  &
-             & sqrt(lambda * omomega / p(:)) * &
-             & tanh(sqrt(p(:) * omomega / lambda))
-     end if
+     select case (PORO)
+     case (1)
+       ! single porosity, barker-like
+       beta(1:NP) = 1.0_DP
+     case (2)
+       ! warren-root double porosity
+       beta(1:NP) = omega + lambda / (lambda / omomega + p(:))
+     case (3)
+       ! approximation to Kazemi via Kuhlman et al. (2015)
+       ! sum() is \bar{g}(p) (i.e., matrix memory kernel)
+       beta(1:NP) = omega + sum(2.0_DP * lambda / &
+            (spread(ivsq(1:NA) * lambda / omomega, dim=2, ncopies=NP) + &
+            spread(p(1:NP), dim=1, ncopies=NA)), dim=1)
+     case (4)
+       ! infinite sum evaluated using Mathematica
+       beta(1:NP) = omega +  &
+            & sqrt(lambda * omomega / p(:)) * &
+            & tanh(sqrt(p(:) * omomega / lambda))
+     end select
      ! apply p and take square-root
      betgam(1:NP) = sqrt(p(:) * beta(:))  ! beta*gamma
      beta(1:NP) = betgam/gamma ! just beta (1/gamma^2 factored out of square root)
@@ -326,7 +328,7 @@ program powerlaw
      arg(1:NP,-1:0) = spread(beta(:),2,2)
      if (ATSOURCE) then
         r_term = 1.0_DP
-        unscale = 1.0_DP
+        unscale = cmplx(1.0,0.0,DP)
      else ! for rD > 1
         if (SPECQ) then
            ! type II/III BC, beta*r**gamma in K_nu term
@@ -343,7 +345,7 @@ program powerlaw
               arg(1:NP,-1) = beta(:) * rD ** gamma ! nu term in numerator with r-dependnce
            end if
         end if
-        unscale = exp(-(rD ** gamma)) ! account for different scaling when rD > 1
+        unscale = exp(-beta(:)*(rD ** gamma - 1.0_DP)) ! account for different scaling when rD > 1
      end if
 
      if (SPECQ) then
@@ -412,7 +414,7 @@ program powerlaw
         end if
      end if
 
-     fp(1:np) = (r_term * unscale) * fp(:) ! apply numerator r_term and unscaling factor last
+     fp(1:np) = (r_term * unscale(:)) * fp(:) ! apply numerator r_term and unscaling factor last
      
      ft = deHoog_invlap(t(n),tee,fp(:),lap)
      if (DERIV) then
@@ -425,7 +427,7 @@ program powerlaw
 
   end do
 
-  deallocate(t,p,fp,beta,barft,timePar)
+  deallocate(t,p,fp,beta,barft,timePar,unscale)
   if (allocated(ivsq)) then
      deallocate(ivsq)
   end if
