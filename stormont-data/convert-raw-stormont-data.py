@@ -35,16 +35,24 @@ for fn in glob("??-*r.csv"):
     print(d[bore_no][:5, :])
 
     delta = np.zeros_like(d[bore_no])
-    delta[:, 0] = d[bore_no][:, 0] - mineby_time
-    idx = np.argmin(np.abs(delta[:, 0]))
-    delta[:, 1] = d[bore_no][idx, 1] - d[bore_no][:, 1]
+    delta[:, 0] = d[bore_no][:, 0] - mineby_time # delta time
+
+    if 0:
+        idx = np.argmin(np.abs(delta[:, 0])) # value closest to zero time (pos or neg)
+        norm_p = d[bore_no][idx, 1]
+    if 1:
+        idx = np.argmax(d[bore_no][:,1])
+        norm_p = d[bore_no][idx,1]
+
+    print(norm_p,idx,delta[idx,0]/DAY2SEC)
+    delta[:, 1] = (norm_p - d[bore_no][:, 1])/norm_p # delta relative pressure
 
     sidx = np.argsort(delta[:, 0])
     sdelta = delta[sidx, :]
     pos_mask = sdelta[:, 0] > 0.0
 
     ax.loglog(
-        sdelta[pos_mask, 0],
+        sdelta[pos_mask, 0]/DAY2SEC,
         sdelta[pos_mask, 1],
         label=f"{bore_no} {bore_r}r",
         lw=0.25,
@@ -53,8 +61,8 @@ for fn in glob("??-*r.csv"):
 
     np.savetxt(fn.replace(".csv", "-drawdown.csv"), sdelta[pos_mask], fmt="%.3e")
 
-ax.set_xlabel("time since mineby [sec]")
-ax.set_ylabel("$\\Delta P$ since mineby [MPa]")
+ax.set_xlabel("time since mineby [day]")
+ax.set_ylabel("relative $\\Delta P$ since mineby [MPa]")
 ax.grid(True)
 ax.legend(loc=0, fontsize="small")
 
