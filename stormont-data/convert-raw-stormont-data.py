@@ -53,6 +53,7 @@ for fn in glob("??-*r.csv"):
         )
         norm_t = np.median(d[bore_no][avg_mask, 0])
         norm_p = np.median(d[bore_no][avg_mask, 1])
+        norm_p = 3.0
 
     print(norm_p, norm_t / DAY2SEC)
     delta[:, 1] = (norm_p - d[bore_no][:, 1]) / norm_p  # delta relative pressure
@@ -92,6 +93,7 @@ axes[1].set_ylim([-0.25, 3])
 
 ax.set_xlabel("time since mineby [day]")
 ax.set_ylabel("relative $\\Delta P$ since mineby [MPa]")
+ax.set_title(f"assuming far-field pressure is {norm_p:.1f} MPa")
 ax.grid(True)
 ax.legend(loc=0, fontsize="small")
 
