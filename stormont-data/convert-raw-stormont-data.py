@@ -49,11 +49,11 @@ for fn in glob("??-*r.csv"):
         norm_p = d[bore_no][idx, 1]
     if 1:
         avg_mask = np.logical_and(
-            d[bore_no][:, 0] >= 145 * DAY2SEC, d[bore_no][:, 0] <= mineby_time
+            d[bore_no][:, 0] >= 140 * DAY2SEC, d[bore_no][:, 0] <= mineby_time + 14 * DAY2SEC
         )
         norm_t = np.median(d[bore_no][avg_mask, 0])
-        norm_p = np.median(d[bore_no][avg_mask, 1])
-        norm_p = 3.0
+        #norm_p = np.median(d[bore_no][avg_mask, 1])
+        norm_p = np.max(d[bore_no][avg_mask, 1])
 
     print(norm_p, norm_t / DAY2SEC)
     delta[:, 1] = (norm_p - d[bore_no][:, 1]) / norm_p  # delta relative pressure
@@ -89,7 +89,7 @@ axes[0].set_ylim([mb[1, 1], mb[0, 1]])
 axes[1].set_xlabel("days")
 axes[1].set_ylabel("$\\Delta$ pressure [MPa]")
 axes[1].grid(True)
-axes[1].set_ylim([-0.25, 3])
+axes[1].set_ylim([-0.5, 3.5])
 
 ax.set_xlabel("time since mineby [day]")
 ax.set_ylabel("relative $\\Delta P$ since mineby [MPa]")
