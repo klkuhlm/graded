@@ -58,7 +58,7 @@ for fn in glob("??-*r.csv"):
         norm_p = np.max(d[bore_no][avg_mask, 1])
 
     print(norm_p, norm_t / DAY2SEC)
-    delta[:, 1] = (norm_p - d[bore_no][:, 1]) / norm_p  # delta relative pressure
+    delta[:, 1] = (norm_p - d[bore_no][:, 1]) / 1.0 # norm_p  # delta relative pressure
 
     sidx = np.argsort(delta[:, 0])
     sdelta = delta[sidx, :]
@@ -97,7 +97,7 @@ axes[1].grid(True)
 axes[1].set_ylim([-0.5, 3.5])
 
 ax.set_xlabel("time since mineby [day]")
-ax.set_ylabel("relative $\\Delta P$ since mineby [MPa]")
+ax.set_ylabel("$\\Delta P$ since mineby [MPa]")
 ax.set_title(f"assuming far-field pressure is {norm_p:.1f} MPa")
 ax.grid(True)
 ax.legend(loc=0, fontsize="small")

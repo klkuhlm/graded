@@ -1,5 +1,5 @@
 False 1 True False True          :: SPECQ?, PORO (1=single, 2=WR, 3=KZ sum, 4=KZ analytical sum), HEADER?, DERIV?, COMPUTEP?
-2.0 6.0 1.0 2500                 :: eta, kappa, m, Na (# terms in Kazemi sum, PORO=3)
+1.0 2.0 0.5 2500                 :: eta, kappa, m, Na (# terms in Kazemi sum, PORO=3)
 0.0 1.0D-6 1.0D-3 1.0D+3 %%%%r%%%%     :: sigma, lambda, omega, permRatio, r_calc
 True -3.0 3.0 50 not.used        :: calcT, minlogt, maxlogt, nt, timefilename
 1.0D-14 1.0D-16 20               :: L%alpha, L%tol, L%M
