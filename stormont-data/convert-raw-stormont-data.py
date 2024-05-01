@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 DAY2SEC = 24.0 * 60.0 * 60.0
 
+colors = {1.25:"red",1.5:"green",2.0:"black",3.0:"blue",4.0:"orange"}
+
 # digitized "mineby" line
 mb = []
 with open("mineby.csv", "r", encoding="ascii") as fh:
@@ -64,17 +66,20 @@ for fn in glob("??-*r.csv"):
 
     # original data
     axes[0].plot(
-        d[bore_no][sidx, 0] / DAY2SEC, d[bore_no][sidx, 1], lw=0.25, marker="."
+        d[bore_no][sidx, 0] / DAY2SEC, d[bore_no][sidx, 1], lw=0.25,
+        color=colors[bore_r], marker="."
     )
     axes[0].plot(mb[:, 0], mb[:, 1], "k--")
 
     # drop in pressure (not normalized)
-    axes[1].plot(d[bore_no][sidx, 0] / DAY2SEC, delta[sidx, 1] * norm_p)
+    axes[1].plot(d[bore_no][sidx, 0] / DAY2SEC, delta[sidx, 1] * norm_p,
+                 color=colors[bore_r])
     axes[1].plot(mb[:, 0], mb[:, 1], "k--")
 
     ax.loglog(
         sdelta[pos_mask, 0] / DAY2SEC,
         sdelta[pos_mask, 1],
+        color=colors[bore_r],
         label=f"{bore_no} {bore_r}r",
         lw=0.25,
         marker=".",
