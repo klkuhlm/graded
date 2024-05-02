@@ -1,0 +1,7 @@
+False 1 False False True                 :: SPECQ, PORO, HEADER, DERIV, COMPUTEP
+%%%eta%%%  %%%kappa%%%  %%%m%%%  1000   :: eta, kapppa, m, Na
+0.0D+0 1.0D+0  1.0D+0  1.0E+3  %%%r%%%                :: sigma, lambda, omega, permRatio, r_calc
+False -3.0 7.0 %%%nt%%% tD.in    :: calcT, minlogt, maxlogt, nt, timefilename
+1.0D-14 1.0D-16 20               :: L%alpha, L%tol, L%M
+powerlaw.out                     :: outfilename
+0                                :: timeflag
