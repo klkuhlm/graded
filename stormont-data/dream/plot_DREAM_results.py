@@ -17,7 +17,7 @@ base = f"powerlaw_stormont_uniform"
 print(base)
 
 READ_FINAL = False
-burnin = 100
+burnin = 700
 
 if READ_FINAL:
     m = sio.loadmat(f"{base}_results.mat")
