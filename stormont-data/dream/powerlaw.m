@@ -55,7 +55,7 @@ function [ S ] = powerlaw(p,Extra)
 
   end
    
-  if mod(idx,10) == 0
+  if mod(idx,20) == 0
     fprintf('%5i %.2f %.2f %.2f %.2f %.2f %.2f\n', ...
               idx,p(1),p(2),p(3),p(4),p(5),p(6));
   end 
