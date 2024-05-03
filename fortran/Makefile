@@ -33,7 +33,7 @@ SRCS=$(OBJS:.o=.f90)
 #### gfortran #################
 F90=gfortran
 DFLAGS=-Og -Wall -Wextra  -g -fcheck=all 
-PFLAGS=-O3 -march=native -flto
+PFLAGS=-O2 -march=native
 
 # switch between performance or debugging flags
 # based on whethere the environment variable PERF is defined

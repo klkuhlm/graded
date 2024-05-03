@@ -134,7 +134,7 @@ MCMCPar.parallelUpdate = 0.9;           % Fraction of parallel direction updates
 % Recommended parameter settings
 MCMCPar.seq = 4;                        % Number of Markov Chains / sequences
 MCMCPar.DEpairs = 2;                    % Number of chain pairs to generate candidate points
-MCMCPar.nCR = 4;                        % Number of crossover values used
+MCMCPar.nCR = 3;                        % Number of crossover values used
 MCMCPar.m0 = 100 * MCMCPar.n;            % Initial size of Z
 MCMCPar.k = 10;                         % Thinning parameter for appending X to Z
 MCMCPar.eps = 5e-2;                     % Perturbation for ergodicity
