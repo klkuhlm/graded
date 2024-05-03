@@ -188,6 +188,7 @@ data56 = readmatrix('56-2r-drawdown.txt');
 data58 = readmatrix('58-3r-drawdown.txt');
 
 data = [data53; data54; data56; data58]; % concatenate all together
+data(:,2) = data(:,2) * 1.0E+6; % convert to Pa
 
 Extra.ndata = [size(data53,1),size(data54,1), ...
                size(data56,1),size(data58,1)]; % size of individual vectors

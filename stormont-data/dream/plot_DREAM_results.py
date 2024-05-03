@@ -17,7 +17,7 @@ base = f"powerlaw_stormont_uniform"
 print(base)
 
 READ_FINAL = False
-burnin = 40
+burnin = 12000
 
 if READ_FINAL:
     m = sio.loadmat(f"{base}_results.mat")
@@ -158,7 +158,7 @@ if 1:
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # corner plot of joint posterior distributions
-if 0:
+if 1:
 
     xx = np.concatenate(
         (
@@ -197,6 +197,10 @@ if 1:
     
     obs = [data53, data54, data56, data58] # don't concatenate
     rvec = [1.25, 1.5, 2.0, 3.0] # rD for each observation
+
+    for ob in obs:
+        print(ob.shape)
+        print(ob[:5,:])
     
     # rough non-dimensionalizing for ballparking time range from data
     c = 10.0 ** grand_mean[2] * cf + 10.0 ** grand_mean[1]  # (n*cf+cm)
@@ -204,10 +208,12 @@ if 1:
         10.0 ** grand_mean[2] * c * Lc ** 2 * mu / 10.0 ** grand_mean[0]
     )  # n0*c*Lc^2*mu/k0
     tD = np.logspace(
-        np.log10(0.75 * obs[0][0, 0] / Tc), np.log10(10.0 * obs[0][-1, 0] / Tc), 100
+        np.log10(0.75 * obs[0][0, 0] / Tc),
+        np.log10(10.0 * obs[0][-1, 0] / Tc), 100
     )
     np.savetxt("tD.in", tD)
     print("tD.shape",tD.shape)
+    print(f"c={c:.3e} Tc={Tc:.3e} tD0={tD[0]} tDN={tD[-1]}")
 
     # random sample from chain
     np.random.seed(1234)
@@ -231,15 +237,17 @@ if 1:
                  params[3], 10.0**params[4], params[5]]
             pout = [params[2], params[2]*params[3], params[5], -999.0] # eta, kappa, m, rD
 
-            print("params",params)
-            print("p",p)
-            print("pout",pout)
+            #print("params",params)
+            #print("p",p)
+            #print("pout",pout)
             
             #cg = gray(norm(-params[npar]))
             c = p[2] * cf + p[1]  # (n*cf + cm)
             Tc = p[2] * c * Lc ** 2 * mu / p[0]  # n0*c*Lc^2*mu/k0
-            P_scale = 3.0e6 
+            P_scale = 3.0e+6 
 
+            print(f"c={c:.3e} Tc={Tc:.3e} Pc={P_scale:.3e}")
+            
             tt = tD * Tc
             
             for ii,rv in enumerate(rvec):
@@ -252,6 +260,7 @@ if 1:
                 subprocess.run("./drive-powerlaw.sh", shell=True)
 
                 sim = np.loadtxt("powerlaw.out", usecols=(1,))
+                print(sim)
                 
                 SIM = sim * P_scale
 
@@ -259,21 +268,21 @@ if 1:
                 axes[0].semilogx(tt, SIM, linestyle="-", color=colors[ii], lw=lw)
                 axes[1].loglog(tt, SIM, linestyle="-", color=colors[ii], lw=lw)
 
-    if ii in range(4):
+    for ii in range(4):
         axes[0].semilogx(
             obs[ii][:, 0],
-            obs[ii][:, 1],
+            obs[ii][:, 1]*1.0E+6,
             color=colors[ii],
-            marker="o",
+            marker=".",
             markerfacecolor=colors[ii],
             linestyle="none",
             markersize=4,
         )
         axes[1].loglog(
             obs[ii][:, 0],
-            obs[ii][:, 1],
+            obs[ii][:, 1]*1.0E+6,
             color=colors[ii],
-            marker="o",
+            marker=".",
             markerfacecolor=colors[ii],
             linestyle="none",
             markersize=4,
@@ -287,7 +296,7 @@ if 1:
     axes[0].grid(True)
     axes[1].grid(True)
 
-    fig.suptitle(bore)
+    ##fig.suptitle(bore)
     fig.tight_layout()
     fig.savefig(f"{fn}-horsetail.png", dpi=200)
     plt.close(1)

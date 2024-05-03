@@ -15,3 +15,5 @@ sed -e "s/%%%eta%%%/${PARS[0]}/" \
     -e "s/%%%nt%%%/${NT}/" < powerlaw-template.in > powerlaw.in
 
 ./powerlaw
+
+#head powerlaw.out
