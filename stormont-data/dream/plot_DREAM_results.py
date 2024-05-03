@@ -17,7 +17,7 @@ base = f"powerlaw_stormont_uniform"
 print(base)
 
 READ_FINAL = False
-burnin = 700
+burnin = 40
 
 if READ_FINAL:
     m = sio.loadmat(f"{base}_results.mat")
@@ -158,7 +158,7 @@ if 1:
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # corner plot of joint posterior distributions
-if 1:
+if 0:
 
     xx = np.concatenate(
         (
@@ -180,95 +180,109 @@ if 1:
 
 # ****************************************
 # horsetail plot
-if 0:
+if 1:
     Lc = 0.4825  # borehole radius (m)
     mu = 1.75e-03  # brine viscosity (Pa*sec)
     cf = 3.1e-10  # fluid compressibility (1/Pa)
 
-    nhorsetail = 100
+    colors = ["red","green","blue","black"]
+    
+    nhorsetail = 2
 
-    b = bore.split("_")[0]
-    obs = np.loadtxt(f"../{b}_rate.csv", delimiter=",")
+    # data tables are time (seconds) and change in pressure (MPa)
+    data53 = np.loadtxt('53-1.25r-drawdown.txt')
+    data54 = np.loadtxt('54-1.5r-drawdown.txt')
+    data56 = np.loadtxt('56-2r-drawdown.txt')
+    data58 = np.loadtxt('58-3r-drawdown.txt')
+    
+    obs = [data53, data54, data56, data58] # don't concatenate
+    rvec = [1.25, 1.5, 2.0, 3.0] # rD for each observation
+    
     # rough non-dimensionalizing for ballparking time range from data
     c = 10.0 ** grand_mean[2] * cf + 10.0 ** grand_mean[1]  # (n*cf+cm)
     Tc = (
         10.0 ** grand_mean[2] * c * Lc ** 2 * mu / 10.0 ** grand_mean[0]
     )  # n0*c*Lc^2*mu/k0
     tD = np.logspace(
-        np.log10(0.75 * obs[0, 0] / Tc), np.log10(10.0 * obs[-1, 0] / Tc), 100
+        np.log10(0.75 * obs[0][0, 0] / Tc), np.log10(10.0 * obs[0][-1, 0] / Tc), 100
     )
     np.savetxt("tD.in", tD)
+    print("tD.shape",tD.shape)
 
     # random sample from chain
-    np.random.seed(123)
+    np.random.seed(1234)
     sidx = np.random.randint(low=burnin - 1, high=niter - 1, size=nhorsetail)
 
     norm = matplotlib.colors.Normalize(
         vmin=-(m["Sequences"][burnin:, npar, :].max()),
         vmax=-(m["Sequences"][burnin:, npar, :].min()),
     )
-    gray = matplotlib.cm.get_cmap(name="gray")
 
     fig, axes = plt.subplots(1, 2, num=1, figsize=(6, 4))
     lw = 0.25
 
     for i in range(nhorsetail):
-        if i % 20 == 0:
+        if i % 10 == 0:
             print(i)
         for j in range(nchains):
-
+            
             params = m["Sequences"][sidx[i], :, j]
-            p = [10.0 ** x for x in params[0:3]]
-            p.append(params[3])  # m not exponentiated
+            p = [10.0**params[0], 10.0**params[1], params[2],
+                 params[3], 10.0**params[4], params[5]]
+            pout = [params[2], params[2]*params[3], params[5], -999.0] # eta, kappa, m, rD
 
-            pout = [0.0, 0.0, params[3], 0.0, 0.0]
-
-            fh = open("parameters.in", "w")
-            fh.write(" ".join([f"{x:.12E}" for x in pout]) + "\n")
-            fh.close()
-
-            subprocess.run("rm -f powerlaw.out", shell=True)
-            subprocess.run("./drive-powerlaw.sh", shell=True)
-
-            # print(i, j, sidx[i], params[: npar + 1])
-
-            sim = np.loadtxt("powerlaw.out", usecols=(1,))
-            cg = gray(norm(-params[npar]))
-
+            print("params",params)
+            print("p",p)
+            print("pout",pout)
+            
+            #cg = gray(norm(-params[npar]))
             c = p[2] * cf + p[1]  # (n*cf + cm)
             Tc = p[2] * c * Lc ** 2 * mu / p[0]  # n0*c*Lc^2*mu/k0
-            Q_scale = 11.9e6 * p[0] / (Lc * mu)  # Q_D=Q*Pc*k/(Lc*mu)
+            P_scale = 3.0e6 
 
             tt = tD * Tc
-            SIM = sim * Q_scale
+            
+            for ii,rv in enumerate(rvec):
+                pout[3] = rv
+                
+                fh = open("parameters.in", "w")
+                fh.write(" ".join([f"{x:.12E}" for x in pout]) + "\n")
+                fh.close()
+                
+                subprocess.run("./drive-powerlaw.sh", shell=True)
 
-            # re-dimensionalize model output
-            axes[0].semilogx(tt, SIM, linestyle="-", color=cg, lw=lw)
-            axes[1].loglog(tt, SIM, linestyle="-", color=cg, lw=lw)
+                sim = np.loadtxt("powerlaw.out", usecols=(1,))
+                
+                SIM = sim * P_scale
 
-    axes[0].semilogx(
-        obs[:, 0],
-        obs[:, 1],
-        color="red",
-        marker="o",
-        markerfacecolor="red",
-        linestyle="none",
-        markersize=4,
-    )
-    axes[1].loglog(
-        obs[:, 0],
-        obs[:, 1],
-        color="red",
-        marker="o",
-        markerfacecolor="red",
-        linestyle="none",
-        markersize=4,
-    )
+                # re-dimensionalize model output
+                axes[0].semilogx(tt, SIM, linestyle="-", color=colors[ii], lw=lw)
+                axes[1].loglog(tt, SIM, linestyle="-", color=colors[ii], lw=lw)
+
+    if ii in range(4):
+        axes[0].semilogx(
+            obs[ii][:, 0],
+            obs[ii][:, 1],
+            color=colors[ii],
+            marker="o",
+            markerfacecolor=colors[ii],
+            linestyle="none",
+            markersize=4,
+        )
+        axes[1].loglog(
+            obs[ii][:, 0],
+            obs[ii][:, 1],
+            color=colors[ii],
+            marker="o",
+            markerfacecolor=colors[ii],
+            linestyle="none",
+            markersize=4,
+        )
 
     axes[0].set_xlabel("time (s)")
-    axes[0].set_ylabel("brine flux (m/sec)")
+    axes[0].set_ylabel("p (Pa)")
     axes[1].set_xlabel("time (s)")
-    axes[1].set_ylabel("brine flux (m/sec)")
+    axes[1].set_ylabel("p (Pa)")
 
     axes[0].grid(True)
     axes[1].grid(True)

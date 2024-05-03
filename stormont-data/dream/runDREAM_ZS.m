@@ -178,8 +178,8 @@ cm = log10(2.69E-11);
 % analytical solution parameters
 %	             1      2           3     4       5      6
 %                k0     n0         eta    tau     cm      m
-ParRange.minn= [-24.0, -4.0,        0.001,  1.0, cm - 4.0, 0.5]; 
-ParRange.maxn= [-16.0, log10(0.25), 5.0,  5.0, cm + 4.0,   3.0];
+ParRange.minn= [-23.0, -4.0,        0.001, 1.0,  cm - 5.0, 0.25]; 
+ParRange.maxn= [-16.0, log10(0.25), 4.0,   4.00, cm + 5.0, 3.25];
 
 % data tables are time (seconds) and change in pressure (MPa)
 data53 = readmatrix('53-1.25r-drawdown.txt');
