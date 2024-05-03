@@ -135,7 +135,7 @@ MCMCPar.parallelUpdate = 0.9;           % Fraction of parallel direction updates
 MCMCPar.seq = 4;                        % Number of Markov Chains / sequences
 MCMCPar.DEpairs = 2;                    % Number of chain pairs to generate candidate points
 MCMCPar.nCR = 4;                        % Number of crossover values used
-MCMCPar.m0 = 360; %40 * MCMCPar.n;            % Initial size of Z
+MCMCPar.m0 = 100 * MCMCPar.n;            % Initial size of Z
 MCMCPar.k = 10;                         % Thinning parameter for appending X to Z
 MCMCPar.eps = 5e-2;                     % Perturbation for ergodicity
 MCMCPar.steps = 200;                     % Number of steps before calculating convergence diagnostics
@@ -176,10 +176,10 @@ idx = 1;
 cm = log10(2.69E-11);
 
 % analytical solution parameters
-%	             1      2          3     4       5      6
-%                k0     n0        eta    tau     cm      m
-ParRange.minn= [-24.0, -4.0,       0.0,  1.0, cm - 3.0, 0.75]; 
-ParRange.maxn= [-16.0, log10(0.5), 4.0,  4.0, cm + 3.0, 2.25];
+%	             1      2           3     4       5      6
+%                k0     n0         eta    tau     cm      m
+ParRange.minn= [-24.0, -4.0,        0.001,  1.0, cm - 4.0, 0.5]; 
+ParRange.maxn= [-16.0, log10(0.25), 5.0,  5.0, cm + 4.0,   3.0];
 
 % data tables are time (seconds) and change in pressure (MPa)
 data53 = readmatrix('53-1.25r-drawdown.txt');

@@ -36,7 +36,7 @@ norm = matplotlib.colors.Normalize(
     vmin=-(m["Sequences"][burnin:, npar, :].max()),
     vmax=-(m["Sequences"][burnin:, npar, :].min()),
 )
-gray = matplotlib.cm.get_cmap(name="gray")
+gray = matplotlib.colormaps["gray"]
 
 fn = f"{base}"
 
