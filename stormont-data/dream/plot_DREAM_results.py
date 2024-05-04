@@ -17,7 +17,7 @@ base = f"powerlaw_stormont_uniform"
 print(base)
 
 READ_FINAL = False
-burnin = 12000
+burnin = 2000
 
 if READ_FINAL:
     m = sio.loadmat(f"{base}_results.mat")
@@ -186,8 +186,8 @@ if 1:
     cf = 3.1e-10  # fluid compressibility (1/Pa)
 
     colors = ["red","green","blue","black"]
-    
-    nhorsetail = 2
+
+    nhorsetail = 20
 
     # data tables are time (seconds) and change in pressure (MPa)
     data53 = np.loadtxt('53-1.25r-drawdown.txt')
@@ -203,10 +203,9 @@ if 1:
         print(ob[:5,:])
     
     # rough non-dimensionalizing for ballparking time range from data
-    c = 10.0 ** grand_mean[2] * cf + 10.0 ** grand_mean[1]  # (n*cf+cm)
-    Tc = (
-        10.0 ** grand_mean[2] * c * Lc ** 2 * mu / 10.0 ** grand_mean[0]
-    )  # n0*c*Lc^2*mu/k0
+    c = 10.0 ** grand_mean[1] * cf + 10.0 ** grand_mean[4]  # (n*cf+cm)
+    # n0*c*Lc^2*mu/k0
+    Tc = (10.0 ** grand_mean[1] * c * Lc ** 2 * mu / 10.0 ** grand_mean[0])  
     tD = np.logspace(
         np.log10(0.75 * obs[0][0, 0] / Tc),
         np.log10(10.0 * obs[0][-1, 0] / Tc), 100
@@ -242,8 +241,8 @@ if 1:
             #print("pout",pout)
             
             #cg = gray(norm(-params[npar]))
-            c = p[2] * cf + p[1]  # (n*cf + cm)
-            Tc = p[2] * c * Lc ** 2 * mu / p[0]  # n0*c*Lc^2*mu/k0
+            c = p[1] * cf + p[4]  # (n*cf + cm)
+            Tc = p[1] * c * Lc ** 2 * mu / p[0]  # n0*c*Lc^2*mu/k0
             P_scale = 3.0e+6 
 
             print(f"c={c:.3e} Tc={Tc:.3e} Pc={P_scale:.3e}")
@@ -260,7 +259,7 @@ if 1:
                 subprocess.run("./drive-powerlaw.sh", shell=True)
 
                 sim = np.loadtxt("powerlaw.out", usecols=(1,))
-                print(sim)
+                #print(sim)
                 
                 SIM = sim * P_scale
 
