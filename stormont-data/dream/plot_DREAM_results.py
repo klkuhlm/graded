@@ -17,7 +17,7 @@ base = f"powerlaw_stormont_uniform"
 print(base)
 
 READ_FINAL = False
-burnin = 2000
+burnin = 10000
 
 if READ_FINAL:
     m = sio.loadmat(f"{base}_results.mat")
@@ -187,7 +187,7 @@ if 1:
 
     colors = ["red","green","blue","black"]
 
-    nhorsetail = 20
+    nhorsetail = 50
 
     # data tables are time (seconds) and change in pressure (MPa)
     data53 = np.loadtxt('53-1.25r-drawdown.txt')
