@@ -5,4 +5,10 @@ The python-based solution is slower to execute but easier to use and modify, and
 
 This solution has been published in Mathematical Geosciences as "Generalized Solution for Double-Porosity Flow through a Graded Excavation Damaged Zone" (April 2024).
 
+This paper is an extension of the multiporosity approach given in the 2015 paper in Water Resources Research:
+
+Kuhlman, K.L., B. Malama & J.E. Heath, 2015. Multiporosity flow in fractured low-permeability rocks, Water Resources Research, 51(2):848–860. http://doi.org/10.1002/2014WR016502
+
+and its associated bitbucket repository: https://bitbucket.org/klkuhlm/multiporosity
+
 The author's publications and related software can be found at https://kris.kuhlmans.net
