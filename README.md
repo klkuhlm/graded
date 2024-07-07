@@ -11,4 +11,4 @@ Kuhlman, K.L., B. Malama & J.E. Heath, 2015. Multiporosity flow in fractured low
 
 and its associated bitbucket repository: https://bitbucket.org/klkuhlm/multiporosity
 
-The author's publications and related software can be found at https://kris.kuhlmans.net
+The rest of the author's publications and related software can be found at https://kris.kuhlmans.net
