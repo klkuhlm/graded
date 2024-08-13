@@ -3,7 +3,7 @@ This repository contains both python (using mpmath) and fortran programs for eva
 
 The python-based solution is slower to execute but easier to use and modify, and is based on the mpmath extende-precition library. The fortran version runs faster (i.e., for parameter estimation), but it limited to double precision variables.
 
-This solution has been published in Mathematical Geosciences as "Generalized Solution for Double-Porosity Flow through a Graded Excavation Damaged Zone" (April 2024).
+This solution has been published in Mathematical Geosciences as "Generalized Solution for Double-Porosity Flow through a Graded Excavation Damaged Zone." https://doi.org/10.1007/s11004-024-10143-8
 
 This paper is an extension of the multiporosity approach given in the 2015 paper in Water Resources Research:
 
